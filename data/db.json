@@ -1,0 +1,48 @@
+{
+  "users": [
+    {
+      "id": "user_1785769688919",
+      "name": "nishu",
+      "username": "nishu",
+      "email": "nishita20306@gmail.com",
+      "password": "nishita123",
+      "role": "user",
+      "avatar": "",
+      "coverImage": "",
+      "bio": "",
+      "birthday": "",
+      "joinDate": "August 2026",
+      "createdAt": "2026-08-03T15:08:08.920Z"
+    },
+    {
+      "id": "user_admin_1785873899667989",
+      "name": "Admin",
+      "username": "admin",
+      "email": "admin@dearlily.com",
+      "password": "c20c633c1a317ea8ea4f2415fc428526:9309e41eb4790948560b8f51f841dbfa847641b341506d2fc7392342a5c9870e648ffa8f8338de68fab63a3970be4cee89b0a89161a49e3205ea7defd59e8b5c",
+      "role": "admin",
+      "avatar": "",
+      "coverImage": "",
+      "bio": "Dear Lily Administrator",
+      "birthday": "",
+      "joinDate": "August 2026",
+      "createdAt": "2026-08-04T20:04:59.728Z"
+    },
+    {
+      "id": "user_1785875785150",
+      "name": "nobody",
+      "username": "nobody1",
+      "email": "nobody@fairy.com",
+      "password": "fe3b9978ea1d2748d6599dc109a881b6:3ff679beb33e4cb80f33f545ad0f8d45b71c3ae5a96caf4d7458b63c7014619c0b43b1f1b34b6ca059db93093e9fed8fbd7966133a637ed7e7e4ce13be6c4357",
+      "role": "user",
+      "avatar": "",
+      "coverImage": "",
+      "bio": "",
+      "birthday": "",
+      "joinDate": "August 2026",
+      "createdAt": "2026-08-04T20:36:25.193Z"
+    }
+  ],
+  "photoStrips": [],
+  "diaryEntries": []
+}
