@@ -145,18 +145,47 @@ export const PhotoboothView: React.FC<PhotoboothViewProps> = ({ user, onSaveStri
     setTimeout(() => setShowCurtains(false), 3400);
   };
 
-  // Start Webcam Stream
+  // Start Webcam Stream (Mobile & Desktop Resilient)
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 640 } });
-      if (videoRef.current) {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('Camera API not available. Please use Upload Photos or HTTPS! 📷');
+        return;
+      }
+
+      let stream: MediaStream | null = null;
+      try {
+        // Mobile-friendly front camera constraint with ideal dimensions
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } },
+          audio: false,
+        });
+      } catch {
+        try {
+          // Fallback: Any available video stream
+          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        } catch (err2) {
+          console.error('Camera fallback error:', err2);
+        }
+      }
+
+      if (stream && videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
+        videoRef.current.setAttribute('playsinline', 'true');
+        videoRef.current.setAttribute('muted', 'true');
+        try {
+          await videoRef.current.play();
+        } catch (playErr) {
+          console.warn('Video play warning:', playErr);
+        }
         setIsCameraActive(true);
         triggerCurtainsReveal();
+      } else {
+        showToast('Could not access camera. Please check permissions or use Upload Photos! 📷');
       }
-    } catch {
-      showToast('Webcam access error. You can also upload photos! 📷');
+    } catch (err) {
+      console.error('Camera access error:', err);
+      showToast('Camera permission error. You can also Upload Photos! 📷');
     }
   };
 
@@ -737,6 +766,7 @@ export const PhotoboothView: React.FC<PhotoboothViewProps> = ({ user, onSaveStri
               ref={videoRef}
               className={`w-full h-full object-cover ${isMirrored ? 'scale-x-[-1]' : ''} ${!isCameraActive ? 'hidden' : ''}`}
               style={{ filter: getCombinedFilterStyle() }}
+              autoPlay
               playsInline
               muted
             />
