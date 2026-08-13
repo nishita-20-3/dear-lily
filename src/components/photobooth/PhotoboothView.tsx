@@ -815,6 +815,13 @@ export const PhotoboothView: React.FC<PhotoboothViewProps> = ({ user, onSaveStri
               </>
             )}
 
+            {/* Mobile Native Camera Capture */}
+            <label className="px-2.5 py-1.5 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-900 text-xs font-bold shadow-xs flex items-center gap-1 cursor-pointer transition-all">
+              <Camera className="w-3.5 h-3.5 text-purple-600" />
+              <span>📱 Take Selfie</span>
+              <input type="file" accept="image/*" capture="user" onChange={handleFileUpload} className="hidden" />
+            </label>
+
             <label className="px-2.5 py-1.5 rounded-xl bg-pink-100 hover:bg-pink-200 text-pink-800 text-xs font-bold shadow-xs flex items-center gap-1 cursor-pointer transition-all">
               <Upload className="w-3.5 h-3.5 text-pink-600" />
               <span>Upload</span>

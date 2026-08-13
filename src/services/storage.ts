@@ -1,4 +1,5 @@
 import type { UserProfile, RegisteredUser, PhotoStrip, DiaryEntry, Album, AppSettings } from '../types';
+import { FirebaseService } from './firebase';
 
 const API_BASE_URL = 'http://localhost:3001/api';
 
@@ -139,10 +140,25 @@ export const StorageService = {
       console.warn('Quota error saving user session, trying fallback...', e);
     }
 
-    // Automatically update registered users list so logging back in preserves bio, birthday, avatar, coverImage, etc.
-    if (user && user.email) {
+    // Cloud Database Persistence Sync via Firebase
+    if (user && (user.id || user.email)) {
+      FirebaseService.saveUser({
+        id: user.id || 'user_' + Date.now(),
+        name: user.name || 'Lovely User',
+        username: user.username || 'user',
+        email: user.email || '',
+        password: '',
+        avatar: user.avatar || '',
+        coverImage: user.coverImage || '',
+        bio: user.bio || '',
+        birthday: user.birthday || '',
+        favoriteTheme: user.favoriteTheme || 'Floral Journal',
+        joinDate: user.joinDate || 'August 2026',
+      }).catch(() => {});
+
+      // Automatically update registered users list so logging back in preserves bio, birthday, avatar, coverImage, etc.
       const existing = StorageService.getRegisteredUsers();
-      const cleanEmail = user.email.trim().toLowerCase();
+      const cleanEmail = user.email ? user.email.trim().toLowerCase() : '';
       const cleanId = user.id ? user.id.trim().toLowerCase() : '';
       
       const idx = existing.findIndex(
@@ -167,7 +183,7 @@ export const StorageService = {
         } catch {}
       }
 
-      // Sync SQLite server database
+      // Sync local SQLite fallback API if running locally
       try {
         fetch(`${API_BASE_URL}/user/profile`, {
           method: 'PUT',
@@ -205,6 +221,7 @@ export const StorageService = {
         ...fields,
       };
       localStorage.setItem('dear_lily_registered_users', JSON.stringify(existing));
+      FirebaseService.saveUser(existing[idx]).catch(() => {});
     }
 
     try {
@@ -251,6 +268,7 @@ export const StorageService = {
     const cleanEmail = regUser.email.trim().toLowerCase();
     const updated = [...existing.filter((u) => u.email.trim().toLowerCase() !== cleanEmail), regUser];
     localStorage.setItem('dear_lily_registered_users', JSON.stringify(updated));
+    FirebaseService.saveUser(regUser).catch(() => {});
   },
 
   updateUserPasswordLocal: (email: string, newPass: string): boolean => {
@@ -634,8 +652,9 @@ export const StorageService = {
       // Persist to IndexedDB (virtually unlimited quota in background)
       saveAllStripsToIndexedDB(merged).catch((e) => console.error('IndexedDB background sync error:', e));
 
-      // Sync backend SQLite API in background
+      // Sync Firebase Cloud Realtime Database in background
       for (const strip of updatedUserStrips) {
+        FirebaseService.savePhotoStrip(strip).catch(() => {});
         try {
           fetch(`${API_BASE_URL}/photo-strips`, {
             method: 'POST',
@@ -682,6 +701,11 @@ export const StorageService = {
     const updatedUserEntries = userEntries.map((e) => ({ ...e, userId: targetUserId }));
     const merged = [...updatedUserEntries, ...otherUsersEntries];
     localStorage.setItem('dear_lily_diary', JSON.stringify(merged));
+
+    // Firebase Cloud Database Sync
+    for (const entry of updatedUserEntries) {
+      FirebaseService.saveDiaryEntry(entry).catch(() => {});
+    }
   },
 
   // PER-USER ALBUMS DATA ISOLATION
@@ -708,6 +732,11 @@ export const StorageService = {
     const updatedUserAlbums = userAlbums.map((a) => ({ ...a, userId: targetUserId }));
     const merged = [...updatedUserAlbums, ...otherUsersAlbums];
     localStorage.setItem('dear_lily_albums', JSON.stringify(merged));
+
+    // Firebase Cloud Database Sync
+    for (const album of updatedUserAlbums) {
+      FirebaseService.saveAlbum(album).catch(() => {});
+    }
   },
 
   getSettings: (): AppSettings => {
