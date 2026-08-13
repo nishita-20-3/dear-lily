@@ -12,14 +12,15 @@ import {
 } from 'firebase/firestore';
 import type { RegisteredUser, UserProfile, PhotoStrip, DiaryEntry, Album } from '../types';
 
-// Firebase Configuration for Dear Lily Cloud Realtime Database
+// Firebase Configuration for Dear Lily Cloud Database
 const firebaseConfig = {
-  apiKey: "AIzaSyDearLilyCloudStudioAppKey2026",
-  authDomain: "dear-lily-studio.firebaseapp.com",
-  projectId: "dear-lily-studio",
-  storageBucket: "dear-lily-studio.appspot.com",
-  messagingSenderId: "987654321098",
-  appId: "1:987654321098:web:abcdef1234567890",
+  apiKey: "AIzaSyBIUO5dgcokpvosyL8EnFQq08G7WlkofFU",
+  authDomain: "dear-lily.firebaseapp.com",
+  projectId: "dear-lily",
+  storageBucket: "dear-lily.firebasestorage.app",
+  messagingSenderId: "998973852594",
+  appId: "1:998973852594:web:3d53e5ae12597d8cfd72ab",
+  measurementId: "G-F24LP2N92N"
 };
 
 // Initialize Firebase App singleton safely
